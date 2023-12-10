@@ -106,7 +106,6 @@ class ValueIterationAgent(ValueEstimationAgent):
         "*** YOUR CODE HERE ***"
         if self.mdp.isTerminal(state):
             return None
-
         else:
             Q = util.Counter()
             for action in self.mdp.getPossibleActions(state):
@@ -155,7 +154,19 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
+        for iteration in range(self.iterations):
+            # Get the current state for this iteration
+            state = self.mdp.getStates()[iteration % len(self.mdp.getStates())]
 
+            # Skip terminal states
+            if self.mdp.isTerminal(state):
+                continue
+
+            # Compute the best action for the current state
+            best_action = self.computeActionFromValues(state)
+
+            # Update the value of the current state based on the best action
+            self.values[state] = self.computeQValueFromValues(state, best_action)
 
 class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
     """
