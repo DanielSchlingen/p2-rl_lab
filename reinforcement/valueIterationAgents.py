@@ -64,7 +64,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
-        for k in range(self.iterations):
+        for _ in range(self.iterations):
             new_values = util.Counter()
 
             for state in self.mdp.getStates():
@@ -85,14 +85,15 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        sum = 0
+        # Calculate Q-value using the Bellman equation
+        q_value = 0
 
         if action in self.mdp.getPossibleActions(state):
             for new_state, prob in self.mdp.getTransitionStatesAndProbs(state, action):
-                sum += prob * (self.mdp.getReward(state, action, new_state) +
-                               self.discount * self.getValue(new_state))
+                q_value += prob * (self.mdp.getReward(state, action, new_state) +
+                                   self.discount * self.getValue(new_state))
 
-        return sum
+        return q_value
 
     def computeActionFromValues(self, state):
         """
@@ -104,14 +105,12 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
+        # Find the action that maximizes the Q-value for the given state
         if self.mdp.isTerminal(state):
             return None
         else:
-            Q = util.Counter()
-            for action in self.mdp.getPossibleActions(state):
-                Q[action] = self.computeQValueFromValues(state, action)
-
-            return Q.argMax()
+            actions = self.mdp.getPossibleActions(state)
+            return max(actions, key=lambda a: self.computeQValueFromValues(state, a))
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
@@ -154,9 +153,11 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
+        states = self.mdp.getStates()
+
         for iteration in range(self.iterations):
             # Get the current state for this iteration
-            state = self.mdp.getStates()[iteration % len(self.mdp.getStates())]
+            state = states[iteration % len(states)]
 
             # Skip terminal states
             if self.mdp.isTerminal(state):

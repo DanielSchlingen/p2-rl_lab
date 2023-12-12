@@ -100,14 +100,12 @@ class QLearningAgent(ReinforcementAgent):
         action = None
         "*** YOUR CODE HERE ***"
         # util.raiseNotDefined()
+        legalActions = self.getLegalActions(state)
         if not legalActions:
-            return action
-
+            return None
         if util.flipCoin(self.epsilon):
-            # Exploration: choose a random action
             return random.choice(legalActions)
         else:
-            # Exploitation: choose the best action
             return self.computeActionFromQValues(state)
         # return action
 
@@ -212,4 +210,4 @@ class ApproximateQAgent(PacmanQAgent):
         if self.episodesSoFar == self.numTraining:
             # you might want to print your weights here for debugging
             "*** YOUR CODE HERE ***"
-            print("weights (debugging): ", self.weights)
+            print("weights (for debugging): ", self.weights)
